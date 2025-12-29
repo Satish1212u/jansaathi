@@ -71,7 +71,7 @@ export function Footer() {
   };
 
   return (
-    <footer className="bg-card border-t border-border">
+    <footer id="footer" className="bg-card border-t border-border">
       <div className="container py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* About Section */}
