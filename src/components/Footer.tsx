@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Mail, Send, Loader2, ExternalLink, Sparkles, Phone, MapPin, Twitter, Facebook, Instagram } from "lucide-react";
+import { Mail, Send, Loader2, ExternalLink, Phone, MapPin, Twitter, Facebook, Instagram } from "lucide-react";
+import logo from "@/assets/logo.jpg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -81,9 +82,11 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg gradient-hero flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-white" />
-              </div>
+              <img 
+                src={logo} 
+                alt="JanSaathi Logo" 
+                className="w-8 h-8 rounded-lg object-contain bg-white"
+              />
               <span className="font-bold text-lg gradient-text">JanSaathi</span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">

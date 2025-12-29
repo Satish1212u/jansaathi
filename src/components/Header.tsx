@@ -1,6 +1,6 @@
 import { LanguageSelector } from "./LanguageSelector";
 import { ThemeToggle } from "./ThemeToggle";
-import { Sparkles } from "lucide-react";
+import logo from "@/assets/logo.jpg";
 
 interface HeaderProps {
   language: string;
@@ -21,10 +21,11 @@ export function Header({ language, onLanguageChange }: HeaderProps) {
           className="flex items-center gap-3 group cursor-pointer"
         >
           <div className="relative">
-            <div className="w-10 h-10 rounded-xl gradient-hero flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-105">
-              <Sparkles className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <div className="absolute -inset-1 gradient-hero rounded-xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity" />
+            <img 
+              src={logo} 
+              alt="JanSaathi Logo" 
+              className="w-10 h-10 rounded-xl object-contain bg-white shadow-md transition-transform duration-300 group-hover:scale-105"
+            />
           </div>
           <div>
             <h1 className="text-xl font-bold gradient-text">
