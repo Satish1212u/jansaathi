@@ -1,4 +1,6 @@
 import { MessageSquare, Search, FileCheck } from "lucide-react";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { cn } from "@/lib/utils";
 
 const steps = [
   {
@@ -25,10 +27,15 @@ const steps = [
 ];
 
 export function HowItWorks() {
+  const { ref, isVisible } = useScrollAnimation<HTMLElement>();
+
   return (
-    <section className="py-12 md:py-16">
+    <section ref={ref} className="py-12 md:py-16">
       <div className="container">
-        <div className="text-center mb-10">
+        <div className={cn(
+          "text-center mb-10 transition-all duration-700",
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        )}>
           <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
             Simple Process
           </span>
@@ -41,7 +48,11 @@ export function HowItWorks() {
           {steps.map((step, index) => (
             <div
               key={step.number}
-              className="relative group"
+              className={cn(
+                "relative group transition-all duration-500",
+                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+              )}
+              style={{ transitionDelay: isVisible ? `${200 + index * 150}ms` : "0ms" }}
             >
               {/* Connector line */}
               {index < steps.length - 1 && (
