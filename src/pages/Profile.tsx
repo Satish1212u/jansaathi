@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Header } from "@/components/Header";
@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,7 +21,9 @@ import {
   Save,
   KeyRound,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Camera,
+  Trash2
 } from "lucide-react";
 
 export default function Profile() {
@@ -34,6 +36,9 @@ export default function Profile() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -44,6 +49,9 @@ export default function Profile() {
   useEffect(() => {
     if (user?.user_metadata?.full_name) {
       setDisplayName(user.user_metadata.full_name);
+    }
+    if (user?.user_metadata?.avatar_url) {
+      setAvatarUrl(user.user_metadata.avatar_url);
     }
   }, [user]);
 
@@ -61,6 +69,8 @@ export default function Profile() {
 
       if (error) throw error;
       toast.success("Profile updated successfully!");
+      // Force refresh of user metadata
+      await supabase.auth.refreshSession();
     } catch (error: any) {
       toast.error(error.message || "Failed to update profile");
     } finally {
@@ -95,6 +105,95 @@ export default function Profile() {
       toast.error(error.message || "Failed to update password");
     } finally {
       setIsChangingPassword(false);
+    }
+  };
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user) return;
+
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!validTypes.includes(file.type)) {
+      toast.error("Please upload a valid image (JPEG, PNG, WebP, or GIF)");
+      return;
+    }
+
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Image must be less than 2MB");
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/avatar.${fileExt}`;
+
+      // Upload to storage
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      // Add cache buster to URL
+      const urlWithCacheBuster = `${publicUrl}?t=${Date.now()}`;
+
+      // Update user metadata
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: { avatar_url: urlWithCacheBuster }
+      });
+
+      if (updateError) throw updateError;
+
+      setAvatarUrl(urlWithCacheBuster);
+      await supabase.auth.refreshSession();
+      toast.success("Avatar updated successfully!");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to upload avatar");
+    } finally {
+      setIsUploadingAvatar(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleRemoveAvatar = async () => {
+    if (!user) return;
+
+    setIsUploadingAvatar(true);
+    try {
+      // List and delete all files in user's folder
+      const { data: files } = await supabase.storage
+        .from('avatars')
+        .list(user.id);
+
+      if (files && files.length > 0) {
+        const filesToDelete = files.map(f => `${user.id}/${f.name}`);
+        await supabase.storage.from('avatars').remove(filesToDelete);
+      }
+
+      // Clear avatar URL in metadata
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: { avatar_url: null }
+      });
+
+      if (updateError) throw updateError;
+
+      setAvatarUrl(null);
+      await supabase.auth.refreshSession();
+      toast.success("Avatar removed successfully!");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to remove avatar");
+    } finally {
+      setIsUploadingAvatar(false);
     }
   };
 
@@ -145,11 +244,49 @@ export default function Profile() {
           <Card className="glass border-border/50">
             <CardHeader className="pb-4">
               <div className="flex items-start gap-4">
-                <Avatar className="w-16 h-16 md:w-20 md:h-20 border-2 border-primary/20">
-                  <AvatarFallback className="gradient-hero text-white text-xl md:text-2xl font-bold">
-                    {getInitials(userDisplayName)}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="relative group">
+                  <Avatar className="w-20 h-20 md:w-24 md:h-24 border-2 border-primary/20">
+                    <AvatarImage src={avatarUrl || undefined} alt={userDisplayName} />
+                    <AvatarFallback className="gradient-hero text-white text-xl md:text-2xl font-bold">
+                      {getInitials(userDisplayName)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    onChange={handleAvatarUpload}
+                    className="hidden"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center bg-background/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                    {isUploadingAvatar ? (
+                      <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                    ) : (
+                      <div className="flex gap-1">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-full"
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          <Camera className="w-4 h-4" />
+                        </Button>
+                        {avatarUrl && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 rounded-full text-destructive hover:text-destructive"
+                            onClick={handleRemoveAvatar}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
                 <div className="flex-1 space-y-1">
                   <CardTitle className="text-xl md:text-2xl">{userDisplayName}</CardTitle>
                   <CardDescription className="flex items-center gap-2">
