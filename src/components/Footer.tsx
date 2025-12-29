@@ -1,10 +1,13 @@
-import { useState } from "react";
-import { Mail, Send, Loader2, ExternalLink, Phone, MapPin, Twitter, Facebook, Instagram } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Mail, Send, Loader2, ExternalLink, Phone, MapPin, Twitter, Facebook, Instagram, LogIn } from "lucide-react";
+import { Link } from "react-router-dom";
+import { z } from "zod";
 import logo from "@/assets/logo.jpg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { User } from "@supabase/supabase-js";
 
 const quickLinks = [
   { label: "myScheme Portal", href: "https://www.myscheme.gov.in" },
@@ -24,18 +27,38 @@ const socialLinks = [
   { icon: Instagram, label: "Instagram", href: "https://www.instagram.com/jansaathi_ai?igsh=MXVieGl1cmQ4NTVuaA==" },
 ];
 
+// Email validation schema using zod
+const emailSchema = z.string().email("Please enter a valid email address").max(254, "Email is too long");
+
 export function Footer() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Check current auth state
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !email.includes("@")) {
+    // Validate email with zod
+    const result = emailSchema.safeParse(email.trim().toLowerCase());
+    if (!result.success) {
       toast({
         title: "Invalid email",
-        description: "Please enter a valid email address.",
+        description: result.error.errors[0]?.message || "Please enter a valid email address.",
         variant: "destructive",
       });
       return;
@@ -45,7 +68,7 @@ export function Footer() {
     try {
       const { error } = await supabase
         .from("newsletter_subscribers")
-        .insert({ email: email.trim().toLowerCase() });
+        .insert({ email: result.data });
 
       if (error) {
         if (error.code === "23505") {
@@ -166,28 +189,43 @@ export function Footer() {
             <p className="text-sm text-muted-foreground">
               Get notified about new schemes.
             </p>
-            <form onSubmit={handleSubscribe} className="flex gap-2">
-              <Input
-                type="email"
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="bg-background/50 border-border/50 text-sm"
-                disabled={isLoading}
-              />
-              <Button 
-                type="submit" 
-                size="icon" 
-                className="shrink-0 gradient-hero border-0" 
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Send className="w-4 h-4" />
-                )}
-              </Button>
-            </form>
+            {user ? (
+              <form onSubmit={handleSubscribe} className="flex gap-2">
+                <Input
+                  type="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="bg-background/50 border-border/50 text-sm"
+                  disabled={isLoading}
+                  maxLength={254}
+                />
+                <Button 
+                  type="submit" 
+                  size="icon" 
+                  className="shrink-0 gradient-hero border-0" 
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
+                </Button>
+              </form>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-xs text-muted-foreground">
+                  Sign in to subscribe to our newsletter.
+                </p>
+                <Button asChild variant="outline" size="sm" className="w-full">
+                  <Link to="/auth">
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Sign in to Subscribe
+                  </Link>
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
