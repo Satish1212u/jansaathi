@@ -71,12 +71,15 @@ export function Footer() {
   };
 
   return (
-    <footer className="bg-muted/30 border-t border-border">
-      <div className="container py-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+    <footer className="bg-card border-t border-border">
+      <div className="container py-12 md:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* About Section */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-foreground">About Us</h3>
+            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+              <span className="w-1 h-5 bg-primary rounded-full" />
+              About Us
+            </h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
               We help Indian citizens discover government welfare schemes they're eligible for. 
               Our AI-powered assistant matches your profile with hundreds of central and state schemes.
@@ -85,16 +88,20 @@ export function Footer() {
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-foreground">Quick Links</h3>
-            <ul className="space-y-2">
+            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+              <span className="w-1 h-5 bg-secondary rounded-full" />
+              Quick Links
+            </h3>
+            <ul className="space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group"
                   >
+                    <span className="group-hover:translate-x-1 transition-transform">→</span>
                     {link.label}
                   </a>
                 </li>
@@ -104,18 +111,27 @@ export function Footer() {
 
           {/* Contact Info */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-foreground">Contact Info</h3>
+            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+              <span className="w-1 h-5 bg-primary rounded-full" />
+              Contact Info
+            </h3>
             <ul className="space-y-3">
-              <li className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Phone className="w-4 h-4 text-primary" />
+              <li className="flex items-center gap-3 text-sm text-muted-foreground">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Phone className="w-4 h-4 text-primary" />
+                </div>
                 <span>Toll Free: 1800-XXX-XXXX</span>
               </li>
-              <li className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Mail className="w-4 h-4 text-primary" />
+              <li className="flex items-center gap-3 text-sm text-muted-foreground">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Mail className="w-4 h-4 text-primary" />
+                </div>
                 <span>help@schemefinder.in</span>
               </li>
-              <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                <MapPin className="w-4 h-4 text-primary mt-0.5" />
+              <li className="flex items-start gap-3 text-sm text-muted-foreground">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <MapPin className="w-4 h-4 text-primary" />
+                </div>
                 <span>New Delhi, India</span>
               </li>
             </ul>
@@ -123,7 +139,10 @@ export function Footer() {
 
           {/* Newsletter Section */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-foreground">Newsletter</h3>
+            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+              <span className="w-1 h-5 bg-secondary rounded-full" />
+              Newsletter
+            </h3>
             <p className="text-sm text-muted-foreground">
               Get updates on new schemes and policy changes.
             </p>
@@ -134,10 +153,10 @@ export function Footer() {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="bg-background"
+                  className="bg-background border-border"
                   disabled={isLoading}
                 />
-                <Button type="submit" size="icon" disabled={isLoading}>
+                <Button type="submit" size="icon" className="shrink-0 gradient-hero" disabled={isLoading}>
                   {isLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
@@ -147,13 +166,13 @@ export function Footer() {
               </div>
             </form>
             {/* Social Links */}
-            <div className="flex gap-3 pt-2">
+            <div className="flex gap-2 pt-2">
               {socialLinks.map((social) => (
                 <a
                   key={social.label}
                   href={social.href}
                   aria-label={social.label}
-                  className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+                  className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-300 hover:scale-105"
                 >
                   <social.icon className="w-4 h-4" />
                 </a>
@@ -164,14 +183,15 @@ export function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-border">
-        <div className="container py-4">
+      <div className="border-t border-border bg-muted/30">
+        <div className="container py-5">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-xs text-muted-foreground text-center md:text-left">
-              © {new Date().getFullYear()} Scheme Finder. All rights reserved.
+              © {new Date().getFullYear()} <span className="font-semibold text-foreground">Scheme Finder</span>. All rights reserved.
             </p>
-            <p className="text-xs text-muted-foreground text-center md:text-right">
-              ⚠️ Information provided is for guidance only. Final eligibility is determined by government authorities.
+            <p className="text-xs text-muted-foreground text-center md:text-right flex items-center gap-1">
+              <span className="text-warning">⚠️</span>
+              Information provided is for guidance only. Final eligibility is determined by government authorities.
             </p>
           </div>
         </div>
