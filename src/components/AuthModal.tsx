@@ -13,9 +13,10 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialMode?: AuthMode;
+  onAuthSuccess?: () => void;
 }
 
-export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalProps) {
+export function AuthModal({ isOpen, onClose, initialMode = "login", onAuthSuccess }: AuthModalProps) {
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -65,12 +66,13 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
     }
   }, [isOpen, initialMode]);
 
-  // Close modal on successful auth
+  // Close modal on successful auth and trigger callback
   useEffect(() => {
     if (isAuthenticated && isOpen) {
       onClose();
+      onAuthSuccess?.();
     }
-  }, [isAuthenticated, isOpen, onClose]);
+  }, [isAuthenticated, isOpen, onClose, onAuthSuccess]);
 
   // Handle escape key
   useEffect(() => {

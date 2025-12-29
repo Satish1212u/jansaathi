@@ -13,6 +13,7 @@ import { CTABanner } from "@/components/CTABanner";
 import { ChatPopup, ChatFAB } from "@/components/ChatPopup";
 import { AuthModal } from "@/components/AuthModal";
 import { useChat } from "@/hooks/useChat";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { RotateCcw, Sparkles, MessageCircle, ArrowRight } from "lucide-react";
 const welcomeMessages: Record<string, { title: string; subtitle: string; prompt: string }> = {
@@ -79,13 +80,34 @@ export default function Index() {
   const [isChatPopupOpen, setIsChatPopupOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<"login" | "register">("login");
+  const [pendingChatOpen, setPendingChatOpen] = useState(false);
   const { messages, isLoading, sendMessage, clearChat } = useChat(language);
+  const { isAuthenticated } = useAuth();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const content = welcomeMessages[language] || welcomeMessages.en;
 
   const openChatPopup = () => setIsChatPopupOpen(true);
   const closeChatPopup = () => setIsChatPopupOpen(false);
   
+  // Handle Start Chat - show login first if not authenticated
+  const handleStartChat = () => {
+    if (!isAuthenticated) {
+      setPendingChatOpen(true);
+      openAuthModal("login");
+    } else {
+      openChatPopup();
+    }
+  };
+
+  // Called after successful authentication
+  const handleAuthSuccess = () => {
+    if (pendingChatOpen) {
+      setPendingChatOpen(false);
+      // Small delay to let the modal close animation complete
+      setTimeout(() => openChatPopup(), 200);
+    }
+  };
+
   const openAuthModal = (mode: "login" | "register") => {
     setAuthModalMode(mode);
     setIsAuthModalOpen(true);
@@ -180,7 +202,7 @@ export default function Index() {
                 >
                   <Button
                     size="lg"
-                    onClick={openChatPopup}
+                    onClick={handleStartChat}
                     className="gap-2 px-8 h-12 rounded-xl gradient-hero text-white shadow-lg hover:shadow-glow transition-all duration-300 hover:scale-105 group"
                   >
                     <MessageCircle className="w-5 h-5" />
@@ -222,7 +244,7 @@ export default function Index() {
         {messages.length === 0 && <Testimonials />}
 
         {/* CTA Banner - Only show when no messages */}
-        {messages.length === 0 && <CTABanner onStartChat={openChatPopup} />}
+        {messages.length === 0 && <CTABanner onStartChat={handleStartChat} />}
 
         {/* Chat Area */}
         <section className="flex-1 flex flex-col">
@@ -298,13 +320,14 @@ export default function Index() {
       />
       
       {/* Floating Action Button */}
-      <ChatFAB onClick={openChatPopup} isOpen={isChatPopupOpen} />
+      <ChatFAB onClick={handleStartChat} isOpen={isChatPopupOpen} />
 
       {/* Auth Modal */}
       <AuthModal 
         isOpen={isAuthModalOpen} 
         onClose={closeAuthModal} 
-        initialMode={authModalMode} 
+        initialMode={authModalMode}
+        onAuthSuccess={handleAuthSuccess}
       />
     </div>
   );
