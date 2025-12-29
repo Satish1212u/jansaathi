@@ -162,6 +162,28 @@ export function useAuth() {
     }
   }, []);
 
+  const signInWithGoogle = useCallback(async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/`,
+        },
+      });
+
+      if (error) {
+        toast.error(error.message);
+        return { error: { message: error.message } };
+      }
+
+      return { error: null };
+    } catch (err) {
+      const message = "Failed to sign in with Google";
+      toast.error(message);
+      return { error: { message } };
+    }
+  }, []);
+
   const resetPassword = useCallback(async (email: string) => {
     try {
       const result = emailSchema.safeParse(email);
@@ -192,6 +214,7 @@ export function useAuth() {
     signIn,
     signUp,
     signOut,
+    signInWithGoogle,
     resetPassword,
   };
 }
