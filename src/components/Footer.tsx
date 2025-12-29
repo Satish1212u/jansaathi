@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mail, Send, Loader2, ExternalLink, Sparkles } from "lucide-react";
+import { Mail, Send, Loader2, ExternalLink, Sparkles, Phone, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,6 +9,12 @@ const quickLinks = [
   { label: "myScheme Portal", href: "https://www.myscheme.gov.in" },
   { label: "Digital India", href: "https://www.digitalindia.gov.in" },
   { label: "India.gov.in", href: "https://www.india.gov.in" },
+];
+
+const contactInfo = [
+  { icon: Phone, label: "1800-XXX-XXXX", href: "tel:1800XXXXXXX" },
+  { icon: Mail, label: "help@jansaathi.in", href: "mailto:help@jansaathi.in" },
+  { icon: MapPin, label: "New Delhi, India", href: null },
 ];
 
 export function Footer() {
@@ -65,7 +71,7 @@ export function Footer() {
   return (
     <footer id="footer" className="border-t border-border/50 bg-card/50">
       <div className="container py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
@@ -101,13 +107,40 @@ export function Footer() {
             </ul>
           </div>
 
+          {/* Contact */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">
+              Contact
+            </h3>
+            <ul className="space-y-3">
+              {contactInfo.map((item) => (
+                <li key={item.label}>
+                  {item.href ? (
+                    <a
+                      href={item.href}
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2"
+                    >
+                      <item.icon className="w-4 h-4 text-primary" />
+                      {item.label}
+                    </a>
+                  ) : (
+                    <span className="text-sm text-muted-foreground inline-flex items-center gap-2">
+                      <item.icon className="w-4 h-4 text-primary" />
+                      {item.label}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+
           {/* Newsletter */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">
               Stay Updated
             </h3>
             <p className="text-sm text-muted-foreground">
-              Get notified about new schemes and policy updates.
+              Get notified about new schemes.
             </p>
             <form onSubmit={handleSubscribe} className="flex gap-2">
               <Input
