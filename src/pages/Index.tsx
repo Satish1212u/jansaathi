@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { ChatMessage } from "@/components/ChatMessage";
 import { ChatInput } from "@/components/ChatInput";
 import { QuickPrompts } from "@/components/QuickPrompts";
@@ -134,24 +135,7 @@ export default function Index() {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="py-4 border-t border-border/50">
-        <div className="container">
-          <p className="text-center text-xs text-muted-foreground">
-            ⚠️ Information provided is for guidance only. Final eligibility is determined by government authorities.
-            <br />
-            Data sourced from{" "}
-            <a
-              href="https://www.myscheme.gov.in"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              myScheme.gov.in
-            </a>
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
