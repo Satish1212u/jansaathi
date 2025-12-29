@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { X, MessageCircle, Minimize2, Maximize2, RotateCcw, Sparkles, History, Plus, Trash2, ChevronLeft } from "lucide-react";
+import { X, MessageCircle, Minimize2, Maximize2, Sparkles, History, Plus, Trash2, ChevronLeft, LogIn, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/components/ChatInput";
 import { ChatMessage } from "@/components/ChatMessage";
 import { useChatWithHistory } from "@/hooks/useChatWithHistory";
+import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -11,6 +12,7 @@ interface ChatPopupProps {
   isOpen: boolean;
   onClose: () => void;
   language?: string;
+  onOpenAuth?: (mode: "login" | "register") => void;
 }
 
 const welcomeMessage = {
@@ -18,9 +20,10 @@ const welcomeMessage = {
   content: "Namaste! 🙏 I'm your JanSaathi assistant. I can help you discover government welfare schemes you might be eligible for. Tell me about yourself - your age, occupation, income, and location - and I'll find the right schemes for you!"
 };
 
-export function ChatPopup({ isOpen, onClose, language = "en" }: ChatPopupProps) {
+export function ChatPopup({ isOpen, onClose, language = "en", onOpenAuth }: ChatPopupProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const { isAuthenticated, user } = useAuth();
   const {
     messages,
     isLoading,
@@ -33,6 +36,8 @@ export function ChatPopup({ isOpen, onClose, language = "en" }: ChatPopupProps) 
     clearAllHistory,
   } = useChatWithHistory(language);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  const userDisplayName = user?.user_metadata?.full_name || user?.email?.split("@")[0];
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -146,6 +151,30 @@ export function ChatPopup({ isOpen, onClose, language = "en" }: ChatPopupProps) 
           <div className="flex items-center gap-1">
             {!showHistory && (
               <>
+                {/* Auth Button */}
+                {isAuthenticated ? (
+                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/10 mr-1">
+                    <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">
+                      <User className="w-3 h-3 text-white" />
+                    </div>
+                    <span className="text-xs text-white/90 max-w-[60px] truncate hidden sm:inline">
+                      {userDisplayName}
+                    </span>
+                  </div>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      onClose();
+                      onOpenAuth?.("login");
+                    }}
+                    className="h-7 px-2 text-xs text-white/80 hover:text-white hover:bg-white/10 gap-1"
+                  >
+                    <LogIn className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Login</span>
+                  </Button>
+                )}
                 <Button
                   variant="ghost"
                   size="icon"

@@ -10,6 +10,7 @@ import { Testimonials } from "@/components/Testimonials";
 import { Statistics } from "@/components/Statistics";
 import { CTABanner } from "@/components/CTABanner";
 import { ChatPopup, ChatFAB } from "@/components/ChatPopup";
+import { AuthModal } from "@/components/AuthModal";
 import { useChat } from "@/hooks/useChat";
 import { Button } from "@/components/ui/button";
 import { RotateCcw, Sparkles } from "lucide-react";
@@ -75,12 +76,20 @@ export default function Index() {
   const [language, setLanguage] = useState("en");
   const [scrollY, setScrollY] = useState(0);
   const [isChatPopupOpen, setIsChatPopupOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<"login" | "register">("login");
   const { messages, isLoading, sendMessage, clearChat } = useChat(language);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const content = welcomeMessages[language] || welcomeMessages.en;
 
   const openChatPopup = () => setIsChatPopupOpen(true);
   const closeChatPopup = () => setIsChatPopupOpen(false);
+  
+  const openAuthModal = (mode: "login" | "register") => {
+    setAuthModalMode(mode);
+    setIsAuthModalOpen(true);
+  };
+  const closeAuthModal = () => setIsAuthModalOpen(false);
 
   // Parallax scroll effect
   useEffect(() => {
@@ -102,7 +111,7 @@ export default function Index() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header language={language} onLanguageChange={setLanguage} />
+      <Header language={language} onLanguageChange={setLanguage} onOpenAuth={openAuthModal} />
 
       <main className="flex-1 flex flex-col">
         {/* Hero Section - Only show when no messages */}
@@ -256,11 +265,19 @@ export default function Index() {
       <ChatPopup 
         isOpen={isChatPopupOpen} 
         onClose={closeChatPopup} 
-        language={language} 
+        language={language}
+        onOpenAuth={openAuthModal}
       />
       
       {/* Floating Action Button */}
       <ChatFAB onClick={openChatPopup} isOpen={isChatPopupOpen} />
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={closeAuthModal} 
+        initialMode={authModalMode} 
+      />
     </div>
   );
 }
