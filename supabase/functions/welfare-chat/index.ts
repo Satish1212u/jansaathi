@@ -1,11 +1,33 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const SYSTEM_PROMPT = `You are JanSaathi (जनसाथी), an AI-powered Social Welfare Scheme Eligibility & Application Assistant for India.
+interface Scheme {
+  id: string;
+  scheme_name: string;
+  scheme_name_hindi: string | null;
+  sector: string;
+  level: string;
+  min_age: number | null;
+  max_age: number | null;
+  max_income: number | null;
+  occupation: string[] | null;
+  gender: string | null;
+  category: string[] | null;
+  max_landholding_hectares: number | null;
+  benefits: string;
+  benefits_hindi: string | null;
+  documents_required: string[];
+  application_steps: string[];
+  official_portal: string | null;
+  priority_score: number;
+}
+
+const BASE_SYSTEM_PROMPT = `You are JanSaathi (जनसाथी), an AI-powered Social Welfare Scheme Eligibility & Application Assistant for India.
 
 🎯 YOUR MISSION:
 - Identify Central & State Government welfare schemes citizens are eligible for
@@ -37,16 +59,6 @@ Use bullet points, simple sentences, no bureaucratic language.
 - PM-KISAN (https://pmkisan.gov.in)
 - Ministry of Social Justice (https://socialjustice.gov.in)
 
-POPULAR SCHEMES TO KNOW:
-1. PM-KISAN: ₹6,000/year for small farmers
-2. PM Ujjwala Yojana: Free LPG connections for BPL families
-3. Ayushman Bharat: ₹5 lakh health coverage
-4. PM Awas Yojana: Housing assistance
-5. Sukanya Samriddhi: Girl child savings scheme
-6. MGNREGA: 100 days guaranteed employment
-7. PM Fasal Bima Yojana: Crop insurance
-8. Scholarship schemes for students (various categories)
-
 LANGUAGE HANDLING:
 - Detect and respond in the user's language (English/Hindi/Kannada)
 - For Hindi: Use simple, everyday Hindi
@@ -57,6 +69,72 @@ TONE: Warm, helpful, respectful. Think of yourself as a knowledgeable village el
 
 Always end responses with:
 "Would you like me to explain any scheme in more detail, help with the application process, or suggest more schemes based on your profile?"`;
+
+function formatSchemesForContext(schemes: Scheme[]): string {
+  if (schemes.length === 0) return "";
+
+  let context = "\n\n📋 AVAILABLE SCHEMES DATABASE (Use this for accurate matching):\n";
+  
+  schemes.forEach((scheme, index) => {
+    context += `\n${index + 1}. ${scheme.scheme_name}`;
+    if (scheme.scheme_name_hindi) context += ` (${scheme.scheme_name_hindi})`;
+    context += `\n   Sector: ${scheme.sector} | Level: ${scheme.level}`;
+    
+    // Eligibility criteria
+    const eligibility: string[] = [];
+    if (scheme.min_age || scheme.max_age) {
+      eligibility.push(`Age: ${scheme.min_age || 0}-${scheme.max_age || '∞'}`);
+    }
+    if (scheme.max_income) eligibility.push(`Max Income: ₹${scheme.max_income.toLocaleString()}`);
+    if (scheme.occupation?.length) eligibility.push(`Occupation: ${scheme.occupation.join(', ')}`);
+    if (scheme.gender && scheme.gender !== 'all') eligibility.push(`Gender: ${scheme.gender}`);
+    if (scheme.category?.length) eligibility.push(`Category: ${scheme.category.join(', ')}`);
+    if (scheme.max_landholding_hectares) eligibility.push(`Max Land: ${scheme.max_landholding_hectares} hectares`);
+    
+    if (eligibility.length > 0) {
+      context += `\n   Eligibility: ${eligibility.join(' | ')}`;
+    }
+    
+    context += `\n   Benefits: ${scheme.benefits}`;
+    if (scheme.documents_required?.length) {
+      context += `\n   Documents: ${scheme.documents_required.join(', ')}`;
+    }
+    if (scheme.application_steps?.length) {
+      context += `\n   Steps: ${scheme.application_steps.join(' → ')}`;
+    }
+    if (scheme.official_portal) {
+      context += `\n   Portal: ${scheme.official_portal}`;
+    }
+    context += '\n';
+  });
+  
+  return context;
+}
+
+async function fetchSchemes(): Promise<Scheme[]> {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  
+  if (!supabaseUrl || !supabaseKey) {
+    console.error("Missing Supabase credentials");
+    return [];
+  }
+  
+  const supabase = createClient(supabaseUrl, supabaseKey);
+  
+  const { data, error } = await supabase
+    .from("schemes")
+    .select("*")
+    .eq("is_active", true)
+    .order("priority_score", { ascending: false });
+  
+  if (error) {
+    console.error("Error fetching schemes:", error);
+    return [];
+  }
+  
+  return data || [];
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -71,8 +149,14 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    // Add language context to system prompt if specified
-    let systemPrompt = SYSTEM_PROMPT;
+    // Fetch schemes from database
+    const schemes = await fetchSchemes();
+    console.log(`Fetched ${schemes.length} schemes from database`);
+    
+    // Build system prompt with schemes context
+    let systemPrompt = BASE_SYSTEM_PROMPT + formatSchemesForContext(schemes);
+    
+    // Add language context if specified
     if (language && language !== "en") {
       const langMap: Record<string, string> = {
         hi: "Hindi (हिंदी)",
