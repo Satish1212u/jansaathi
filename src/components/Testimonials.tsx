@@ -4,30 +4,30 @@ import { cn } from "@/lib/utils";
 
 const testimonials = [
   {
-    name: "Ramesh Kumar",
+    name: "Satish Gupta",
     location: "Bihar",
     occupation: "Farmer",
     quote: "I discovered PM-KISAN and got ₹6,000 yearly support. JanSaathi made it so easy to understand the application process.",
     scheme: "PM-KISAN",
-    avatar: "RK",
+    avatar: "SG",
     rating: 5,
   },
   {
-    name: "Priya Sharma",
+    name: "Akash Kumar",
     location: "Rajasthan",
     occupation: "Student",
     quote: "Found a scholarship I never knew existed. Now my college fees are fully covered. Thank you JanSaathi!",
     scheme: "National Scholarship Portal",
-    avatar: "PS",
+    avatar: "AK",
     rating: 5,
   },
   {
-    name: "Lakshmi Devi",
+    name: "Ranjan Mishra",
     location: "Tamil Nadu",
     occupation: "Self-employed",
     quote: "Got my family enrolled in Ayushman Bharat. The ₹5 lakh health cover gives us peace of mind.",
     scheme: "Ayushman Bharat",
-    avatar: "LD",
+    avatar: "RM",
     rating: 5,
   },
 ];
