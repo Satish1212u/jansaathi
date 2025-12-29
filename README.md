@@ -2,7 +2,7 @@
 
 ## Project info
 
-**URL**: jansaathi.netlify.app
+**URL**: jansaathi.netlify.app/
 
 # JanSaathi 🇮🇳  
 ### Hackathon Submission
