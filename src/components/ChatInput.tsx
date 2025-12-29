@@ -27,20 +27,20 @@ export function ChatInput({ onSend, isLoading, placeholder }: ChatInputProps) {
   };
 
   return (
-    <div className="flex gap-3 items-end">
+    <div className="flex gap-2 items-end">
       <Textarea
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder || "Tell me about yourself to find eligible schemes..."}
-        className="min-h-[52px] max-h-[120px] resize-none bg-card border-2 border-border focus:border-primary rounded-xl text-base"
+        className="min-h-[48px] max-h-[120px] resize-none bg-background/50 border-border/50 focus:border-primary/50 rounded-xl text-sm"
         disabled={isLoading}
       />
       <Button
         onClick={handleSend}
         disabled={!input.trim() || isLoading}
-        size="lg"
-        className="h-[52px] w-[52px] rounded-xl gradient-hero hover:opacity-90 transition-opacity"
+        size="icon"
+        className="h-12 w-12 rounded-xl gradient-hero border-0 shadow-md hover:shadow-lg transition-shadow"
       >
         {isLoading ? (
           <Loader2 className="w-5 h-5 animate-spin" />

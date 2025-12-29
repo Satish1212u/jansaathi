@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mail, Phone, MapPin, Facebook, Twitter, Youtube, Instagram, Send, Loader2 } from "lucide-react";
+import { Mail, Send, Loader2, ExternalLink, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,14 +9,6 @@ const quickLinks = [
   { label: "myScheme Portal", href: "https://www.myscheme.gov.in" },
   { label: "Digital India", href: "https://www.digitalindia.gov.in" },
   { label: "India.gov.in", href: "https://www.india.gov.in" },
-  { label: "PM Jan Dhan Yojana", href: "https://pmjdy.gov.in" },
-];
-
-const socialLinks = [
-  { icon: Facebook, href: "#", label: "Facebook" },
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Youtube, href: "#", label: "YouTube" },
-  { icon: Instagram, href: "#", label: "Instagram" },
 ];
 
 export function Footer() {
@@ -71,127 +63,85 @@ export function Footer() {
   };
 
   return (
-    <footer id="footer" className="bg-card border-t border-border">
-      <div className="container py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-          {/* About Section */}
+    <footer id="footer" className="border-t border-border/50 bg-card/50">
+      <div className="container py-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          {/* Brand */}
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <span className="w-1 h-5 bg-primary rounded-full" />
-              About Us
-            </h3>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg gradient-hero flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-white" />
+              </div>
+              <span className="font-bold text-lg gradient-text">JanSaathi</span>
+            </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              We help Indian citizens discover government welfare schemes they're eligible for. 
-              Our AI-powered assistant matches your profile with hundreds of central and state schemes.
+              AI-powered welfare scheme discovery for Indian citizens. Find government benefits you're eligible for.
             </p>
           </div>
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <span className="w-1 h-5 bg-secondary rounded-full" />
-              Quick Links
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">
+              Resources
             </h3>
-            <ul className="space-y-3">
+            <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group"
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1.5 group"
                   >
-                    <span className="group-hover:translate-x-1 transition-transform">→</span>
                     {link.label}
+                    <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </a>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Contact Info */}
+          {/* Newsletter */}
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <span className="w-1 h-5 bg-primary rounded-full" />
-              Contact Info
-            </h3>
-            <ul className="space-y-3">
-              <li className="flex items-center gap-3 text-sm text-muted-foreground">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Phone className="w-4 h-4 text-primary" />
-                </div>
-                <span>Toll Free: 1800-XXX-XXXX</span>
-              </li>
-              <li className="flex items-center gap-3 text-sm text-muted-foreground">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Mail className="w-4 h-4 text-primary" />
-                </div>
-                <span>help@schemefinder.in</span>
-              </li>
-              <li className="flex items-start gap-3 text-sm text-muted-foreground">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <MapPin className="w-4 h-4 text-primary" />
-                </div>
-                <span>New Delhi, India</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Newsletter Section */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <span className="w-1 h-5 bg-secondary rounded-full" />
-              Newsletter
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">
+              Stay Updated
             </h3>
             <p className="text-sm text-muted-foreground">
-              Get updates on new schemes and policy changes.
+              Get notified about new schemes and policy updates.
             </p>
-            <form onSubmit={handleSubscribe} className="space-y-3">
-              <div className="flex gap-2">
-                <Input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="bg-background border-border"
-                  disabled={isLoading}
-                />
-                <Button type="submit" size="icon" className="shrink-0 gradient-hero" disabled={isLoading}>
-                  {isLoading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Send className="w-4 h-4" />
-                  )}
-                </Button>
-              </div>
+            <form onSubmit={handleSubscribe} className="flex gap-2">
+              <Input
+                type="email"
+                placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-background/50 border-border/50 text-sm"
+                disabled={isLoading}
+              />
+              <Button 
+                type="submit" 
+                size="icon" 
+                className="shrink-0 gradient-hero border-0" 
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Send className="w-4 h-4" />
+                )}
+              </Button>
             </form>
-            {/* Social Links */}
-            <div className="flex gap-2 pt-2">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  aria-label={social.label}
-                  className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-300 hover:scale-105"
-                >
-                  <social.icon className="w-4 h-4" />
-                </a>
-              ))}
-            </div>
           </div>
         </div>
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-border bg-muted/30">
-        <div className="container py-5">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-xs text-muted-foreground text-center md:text-left">
-              © {new Date().getFullYear()} <span className="font-semibold text-foreground">Scheme Finder</span>. All rights reserved.
-            </p>
-            <p className="text-xs text-muted-foreground text-center md:text-right flex items-center gap-1">
-              <span className="text-warning">⚠️</span>
-              Information provided is for guidance only. Final eligibility is determined by government authorities.
+      <div className="border-t border-border/50">
+        <div className="container py-4">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-muted-foreground">
+            <p>© {new Date().getFullYear()} JanSaathi. All rights reserved.</p>
+            <p className="text-center md:text-right">
+              ⚠️ Information is for guidance only. Final eligibility determined by authorities.
             </p>
           </div>
         </div>
