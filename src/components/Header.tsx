@@ -117,6 +117,13 @@ export function Header({ language = "en", onLanguageChange, onOpenAuth }: Header
                       <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                     </div>
                     <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/profile" className="cursor-pointer">
+                        <User className="w-4 h-4 mr-2" />
+                        Profile Settings
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={signOut} className="text-destructive focus:text-destructive">
                       <LogOut className="w-4 h-4 mr-2" />
                       Sign Out
@@ -225,8 +232,8 @@ export function Header({ language = "en", onLanguageChange, onOpenAuth }: Header
 
             {/* Mobile Sign Out */}
             {!isLoading && isAuthenticated && (
-              <div className="pt-2 border-t border-border/30">
-                <div className="flex items-center gap-3 px-3 py-2 mb-2">
+              <div className="pt-2 border-t border-border/30 space-y-2">
+                <div className="flex items-center gap-3 px-3 py-2">
                   <div className="w-8 h-8 rounded-full gradient-hero flex items-center justify-center">
                     <User className="w-4 h-4 text-white" />
                   </div>
@@ -235,6 +242,14 @@ export function Header({ language = "en", onLanguageChange, onOpenAuth }: Header
                     <p className="text-xs text-muted-foreground">{user?.email}</p>
                   </div>
                 </div>
+                <Link
+                  to="/profile"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-2 w-full px-3 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                >
+                  <User className="w-4 h-4" />
+                  Profile Settings
+                </Link>
                 <Button
                   variant="outline"
                   className="w-full gap-2 h-10 rounded-xl text-destructive hover:text-destructive"
