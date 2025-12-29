@@ -9,10 +9,10 @@ import { HowItWorks } from "@/components/HowItWorks";
 import { Testimonials } from "@/components/Testimonials";
 import { Statistics } from "@/components/Statistics";
 import { CTABanner } from "@/components/CTABanner";
+import { ChatPopup, ChatFAB } from "@/components/ChatPopup";
 import { useChat } from "@/hooks/useChat";
 import { Button } from "@/components/ui/button";
 import { RotateCcw, Sparkles } from "lucide-react";
-
 const welcomeMessages: Record<string, { title: string; subtitle: string; prompt: string }> = {
   en: {
     title: "Discover Government Schemes Made For You",
@@ -74,9 +74,13 @@ const welcomeMessages: Record<string, { title: string; subtitle: string; prompt:
 export default function Index() {
   const [language, setLanguage] = useState("en");
   const [scrollY, setScrollY] = useState(0);
+  const [isChatPopupOpen, setIsChatPopupOpen] = useState(false);
   const { messages, isLoading, sendMessage, clearChat } = useChat(language);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const content = welcomeMessages[language] || welcomeMessages.en;
+
+  const openChatPopup = () => setIsChatPopupOpen(true);
+  const closeChatPopup = () => setIsChatPopupOpen(false);
 
   // Parallax scroll effect
   useEffect(() => {
@@ -181,7 +185,7 @@ export default function Index() {
         {messages.length === 0 && <Testimonials />}
 
         {/* CTA Banner - Only show when no messages */}
-        {messages.length === 0 && <CTABanner />}
+        {messages.length === 0 && <CTABanner onStartChat={openChatPopup} />}
 
         {/* Chat Area */}
         <section className="flex-1 flex flex-col">
@@ -247,6 +251,16 @@ export default function Index() {
       </main>
 
       <Footer />
+
+      {/* Chat Popup */}
+      <ChatPopup 
+        isOpen={isChatPopupOpen} 
+        onClose={closeChatPopup} 
+        language={language} 
+      />
+      
+      {/* Floating Action Button */}
+      <ChatFAB onClick={openChatPopup} isOpen={isChatPopupOpen} />
     </div>
   );
 }
