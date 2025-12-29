@@ -52,21 +52,27 @@ export default function Index() {
           <section className="relative overflow-hidden py-12 md:py-20">
             {/* Decorative Elements */}
             <div className="absolute inset-0 z-0 overflow-hidden">
-              <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-              <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-secondary/10 rounded-full blur-3xl" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-primary/5 to-transparent rounded-full" />
+              <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-fade-in" style={{ animationDelay: '0.3s', animationDuration: '1s' }} />
+              <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-fade-in" style={{ animationDelay: '0.5s', animationDuration: '1s' }} />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-primary/5 to-transparent rounded-full animate-fade-in" style={{ animationDelay: '0.2s', animationDuration: '1.2s' }} />
             </div>
 
             <div className="container relative z-10">
-              <div className="max-w-3xl mx-auto text-center space-y-8 animate-fade-in">
+              <div className="max-w-3xl mx-auto text-center space-y-8">
                 {/* Decorative Badge */}
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                <div 
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium opacity-0 animate-slide-up"
+                  style={{ animationDelay: '0.1s', animationFillMode: 'forwards' }}
+                >
                   <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                   AI-Powered Welfare Discovery
                 </div>
 
                 {/* Main Heading */}
-                <h2 className="text-4xl md:text-6xl font-bold text-foreground leading-tight">
+                <h2 
+                  className="text-4xl md:text-6xl font-bold text-foreground leading-tight opacity-0 animate-slide-up"
+                  style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}
+                >
                   <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
                     {content.title.split(' ').slice(0, 2).join(' ')}
                   </span>
@@ -74,12 +80,18 @@ export default function Index() {
                   {content.title.split(' ').slice(2).join(' ')}
                 </h2>
 
-                <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                <p 
+                  className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed opacity-0 animate-slide-up"
+                  style={{ animationDelay: '0.35s', animationFillMode: 'forwards' }}
+                >
                   {content.subtitle}
                 </p>
 
                 {/* Trust Badges */}
-                <div className="pt-6">
+                <div 
+                  className="pt-6 opacity-0 animate-slide-up"
+                  style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}
+                >
                   <TrustBadges />
                 </div>
               </div>
@@ -105,12 +117,20 @@ export default function Index() {
               </div>
             ) : (
               /* Quick Prompts - Only when no messages */
-              <div className="py-6 space-y-4 animate-slide-up" style={{ animationDelay: "0.2s" }}>
-                <div className="flex items-center gap-2 justify-center text-muted-foreground">
+              <div className="py-6 space-y-4">
+                <div 
+                  className="flex items-center gap-2 justify-center text-muted-foreground opacity-0 animate-slide-up"
+                  style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}
+                >
                   <MessageCircle className="w-4 h-4" />
                   <span className="text-sm font-medium">Popular Categories</span>
                 </div>
-                <QuickPrompts onSelect={handleQuickPrompt} />
+                <div 
+                  className="opacity-0 animate-slide-up"
+                  style={{ animationDelay: '0.7s', animationFillMode: 'forwards' }}
+                >
+                  <QuickPrompts onSelect={handleQuickPrompt} />
+                </div>
               </div>
             )}
 

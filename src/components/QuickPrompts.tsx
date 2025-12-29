@@ -62,8 +62,11 @@ export function QuickPrompts({ onSelect }: QuickPromptsProps) {
         <button
           key={prompt.label}
           onClick={() => onSelect(prompt.message)}
-          className={`group relative bg-card rounded-2xl p-5 border border-border shadow-sm hover:shadow-xl transition-all duration-500 ease-out text-left overflow-hidden hover:-translate-y-1 active:scale-[0.98] ${prompt.hoverBorder}`}
-          style={{ animationDelay: `${index * 50}ms` }}
+          className={`group relative bg-card rounded-2xl p-5 border border-border shadow-sm hover:shadow-xl transition-all duration-500 ease-out text-left overflow-hidden hover:-translate-y-1 active:scale-[0.98] opacity-0 animate-slide-up ${prompt.hoverBorder}`}
+          style={{ 
+            animationDelay: `${0.8 + index * 0.08}s`, 
+            animationFillMode: 'forwards' 
+          }}
         >
           {/* Animated gradient background */}
           <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

@@ -21,10 +21,14 @@ export function TrustBadges() {
 
   return (
     <div className="flex flex-wrap justify-center gap-6 md:gap-10">
-      {badges.map((badge) => (
+      {badges.map((badge, index) => (
         <div
           key={badge.label}
-          className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-card border border-border shadow-sm"
+          className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-card border border-border shadow-sm opacity-0 animate-scale-in"
+          style={{ 
+            animationDelay: `${0.5 + index * 0.1}s`, 
+            animationFillMode: 'forwards' 
+          }}
         >
           <badge.icon className={`w-4 h-4 ${badge.color}`} />
           <span className="text-xs md:text-sm font-medium text-foreground">{badge.label}</span>
