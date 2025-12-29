@@ -21,7 +21,7 @@ const contactInfo = [
 const socialLinks = [
   { icon: Twitter, label: "Twitter", href: "https://twitter.com" },
   { icon: Facebook, label: "Facebook", href: "https://facebook.com" },
-  { icon: Instagram, label: "Instagram", href: "https://instagram.com" },
+  { icon: Instagram, label: "Instagram", href: "https://www.instagram.com/jansaathi_ai?igsh=MXVieGl1cmQ4NTVuaA==" },
 ];
 
 export function Footer() {
