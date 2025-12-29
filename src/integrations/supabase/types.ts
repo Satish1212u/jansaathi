@@ -14,7 +14,102 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      schemes: {
+        Row: {
+          additional_eligibility: Json | null
+          application_steps: string[]
+          benefits: string
+          benefits_hindi: string | null
+          benefits_kannada: string | null
+          category: string[] | null
+          created_at: string
+          disability_required: boolean | null
+          documents_required: string[]
+          education_level: string[] | null
+          gender: string | null
+          id: string
+          is_active: boolean | null
+          level: string
+          marital_status: string[] | null
+          max_age: number | null
+          max_income: number | null
+          max_landholding_hectares: number | null
+          min_age: number | null
+          min_landholding_hectares: number | null
+          occupation: string[] | null
+          official_portal: string | null
+          priority_score: number | null
+          scheme_name: string
+          scheme_name_hindi: string | null
+          scheme_name_kannada: string | null
+          sector: string
+          state: string | null
+          updated_at: string
+        }
+        Insert: {
+          additional_eligibility?: Json | null
+          application_steps?: string[]
+          benefits: string
+          benefits_hindi?: string | null
+          benefits_kannada?: string | null
+          category?: string[] | null
+          created_at?: string
+          disability_required?: boolean | null
+          documents_required?: string[]
+          education_level?: string[] | null
+          gender?: string | null
+          id?: string
+          is_active?: boolean | null
+          level: string
+          marital_status?: string[] | null
+          max_age?: number | null
+          max_income?: number | null
+          max_landholding_hectares?: number | null
+          min_age?: number | null
+          min_landholding_hectares?: number | null
+          occupation?: string[] | null
+          official_portal?: string | null
+          priority_score?: number | null
+          scheme_name: string
+          scheme_name_hindi?: string | null
+          scheme_name_kannada?: string | null
+          sector: string
+          state?: string | null
+          updated_at?: string
+        }
+        Update: {
+          additional_eligibility?: Json | null
+          application_steps?: string[]
+          benefits?: string
+          benefits_hindi?: string | null
+          benefits_kannada?: string | null
+          category?: string[] | null
+          created_at?: string
+          disability_required?: boolean | null
+          documents_required?: string[]
+          education_level?: string[] | null
+          gender?: string | null
+          id?: string
+          is_active?: boolean | null
+          level?: string
+          marital_status?: string[] | null
+          max_age?: number | null
+          max_income?: number | null
+          max_landholding_hectares?: number | null
+          min_age?: number | null
+          min_landholding_hectares?: number | null
+          occupation?: string[] | null
+          official_portal?: string | null
+          priority_score?: number | null
+          scheme_name?: string
+          scheme_name_hindi?: string | null
+          scheme_name_kannada?: string | null
+          sector?: string
+          state?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
