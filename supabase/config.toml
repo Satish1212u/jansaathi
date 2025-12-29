@@ -1,4 +1,4 @@
 project_id = "hseqbqburjwmfsupuybs"
 
 [functions.welfare-chat]
-verify_jwt = false
+verify_jwt = true
