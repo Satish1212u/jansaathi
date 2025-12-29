@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { User, Bot } from "lucide-react";
+import { User, Sparkles } from "lucide-react";
 
 interface ChatMessageProps {
   role: "user" | "assistant";
@@ -20,30 +20,30 @@ export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
       {/* Avatar */}
       <div
         className={cn(
-          "flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center",
-          isUser ? "bg-primary" : "bg-secondary"
+          "flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center shadow-sm",
+          isUser ? "gradient-hero" : "bg-secondary"
         )}
       >
         {isUser ? (
-          <User className="w-5 h-5 text-primary-foreground" />
+          <User className="w-4 h-4 text-white" />
         ) : (
-          <Bot className="w-5 h-5 text-secondary-foreground" />
+          <Sparkles className="w-4 h-4 text-white" />
         )}
       </div>
 
       {/* Message Bubble */}
       <div
         className={cn(
-          "max-w-[85%] md:max-w-[75%] px-4 py-3 rounded-2xl shadow-sm",
+          "max-w-[85%] md:max-w-[75%] px-4 py-3 rounded-2xl",
           isUser
-            ? "bg-chat-bubble-user rounded-tr-md"
-            : "bg-chat-bubble-assistant rounded-tl-md"
+            ? "glass rounded-tr-md"
+            : "bg-card border border-border/50 rounded-tl-md shadow-sm"
         )}
       >
-        <div className="text-sm md:text-base leading-relaxed whitespace-pre-wrap">
+        <div className="text-sm leading-relaxed whitespace-pre-wrap text-foreground">
           {content}
           {isStreaming && (
-            <span className="inline-block w-2 h-4 ml-1 bg-foreground/50 animate-pulse" />
+            <span className="inline-block w-1.5 h-4 ml-1 bg-primary rounded-full animate-pulse" />
           )}
         </div>
       </div>
