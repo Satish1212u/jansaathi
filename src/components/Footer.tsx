@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mail, Send, Loader2, ExternalLink, Sparkles, Phone, MapPin } from "lucide-react";
+import { Mail, Send, Loader2, ExternalLink, Sparkles, Phone, MapPin, Twitter, Facebook, Instagram } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,6 +15,12 @@ const contactInfo = [
   { icon: Phone, label: "1800-XXX-XXXX", href: "tel:1800XXXXXXX" },
   { icon: Mail, label: "help@jansaathi.in", href: "mailto:help@jansaathi.in" },
   { icon: MapPin, label: "New Delhi, India", href: null },
+];
+
+const socialLinks = [
+  { icon: Twitter, label: "Twitter", href: "https://twitter.com" },
+  { icon: Facebook, label: "Facebook", href: "https://facebook.com" },
+  { icon: Instagram, label: "Instagram", href: "https://instagram.com" },
 ];
 
 export function Footer() {
@@ -83,6 +89,21 @@ export function Footer() {
             <p className="text-sm text-muted-foreground leading-relaxed">
               AI-powered welfare scheme discovery for Indian citizens. Find government benefits you're eligible for.
             </p>
+            {/* Social Links */}
+            <div className="flex gap-2 pt-2">
+              {socialLinks.map((social) => (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.label}
+                  className="w-9 h-9 rounded-lg bg-muted/50 flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-300 hover:scale-105"
+                >
+                  <social.icon className="w-4 h-4" />
+                </a>
+              ))}
+            </div>
           </div>
 
           {/* Quick Links */}
