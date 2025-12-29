@@ -5,29 +5,29 @@ export function TrustBadges() {
     {
       icon: Shield,
       label: "Official Sources Only",
-      description: "Data from myScheme.gov.in",
+      color: "text-primary",
     },
     {
       icon: Lock,
       label: "Privacy Protected",
-      description: "We never ask for sensitive details",
+      color: "text-secondary",
     },
     {
       icon: CheckCircle,
       label: "Verified Information",
-      description: "Updated government data",
+      color: "text-primary",
     },
   ];
 
   return (
-    <div className="flex flex-wrap justify-center gap-4 md:gap-8">
+    <div className="flex flex-wrap justify-center gap-6 md:gap-10">
       {badges.map((badge) => (
         <div
           key={badge.label}
-          className="flex items-center gap-2 text-muted-foreground"
+          className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-card border border-border shadow-sm"
         >
-          <badge.icon className="w-4 h-4 text-secondary" />
-          <span className="text-xs md:text-sm font-medium">{badge.label}</span>
+          <badge.icon className={`w-4 h-4 ${badge.color}`} />
+          <span className="text-xs md:text-sm font-medium text-foreground">{badge.label}</span>
         </div>
       ))}
     </div>

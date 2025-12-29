@@ -7,8 +7,7 @@ import { QuickPrompts } from "@/components/QuickPrompts";
 import { TrustBadges } from "@/components/TrustBadges";
 import { useChat } from "@/hooks/useChat";
 import { Button } from "@/components/ui/button";
-import { RotateCcw, MessageCircle } from "lucide-react";
-import heroImage from "@/assets/hero-welfare.jpg";
+import { RotateCcw, MessageCircle, Sparkles } from "lucide-react";
 
 const welcomeMessages: Record<string, { title: string; subtitle: string; prompt: string }> = {
   en: {
@@ -50,30 +49,37 @@ export default function Index() {
       <main className="flex-1 flex flex-col">
         {/* Hero Section - Only show when no messages */}
         {messages.length === 0 && (
-          <section className="relative overflow-hidden py-8 md:py-12">
-            {/* Background Image */}
-            <div className="absolute inset-0 z-0">
-              <img
-                src={heroImage}
-                alt="Indian citizens receiving government welfare support"
-                className="w-full h-full object-cover opacity-20"
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background" />
+          <section className="relative overflow-hidden py-12 md:py-20">
+            {/* Decorative Elements */}
+            <div className="absolute inset-0 z-0 overflow-hidden">
+              <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+              <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-secondary/10 rounded-full blur-3xl" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-primary/5 to-transparent rounded-full" />
             </div>
 
             <div className="container relative z-10">
-              <div className="max-w-3xl mx-auto text-center space-y-6 animate-fade-in">
+              <div className="max-w-3xl mx-auto text-center space-y-8 animate-fade-in">
+                {/* Decorative Badge */}
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                  <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                  AI-Powered Welfare Discovery
+                </div>
+
                 {/* Main Heading */}
-                <h2 className="text-3xl md:text-5xl font-bold text-foreground leading-tight">
-                  {content.title}
+                <h2 className="text-4xl md:text-6xl font-bold text-foreground leading-tight">
+                  <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
+                    {content.title.split(' ').slice(0, 2).join(' ')}
+                  </span>
+                  <br />
+                  {content.title.split(' ').slice(2).join(' ')}
                 </h2>
 
-                <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+                <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                   {content.subtitle}
                 </p>
 
                 {/* Trust Badges */}
-                <div className="pt-4">
+                <div className="pt-6">
                   <TrustBadges />
                 </div>
               </div>
