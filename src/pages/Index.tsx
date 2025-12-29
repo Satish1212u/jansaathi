@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ChatMessage } from "@/components/ChatMessage";
@@ -13,7 +14,7 @@ import { ChatPopup, ChatFAB } from "@/components/ChatPopup";
 import { AuthModal } from "@/components/AuthModal";
 import { useChat } from "@/hooks/useChat";
 import { Button } from "@/components/ui/button";
-import { RotateCcw, Sparkles } from "lucide-react";
+import { RotateCcw, Sparkles, MessageCircle, ArrowRight } from "lucide-react";
 const welcomeMessages: Record<string, { title: string; subtitle: string; prompt: string }> = {
   en: {
     title: "Discover Government Schemes Made For You",
@@ -172,10 +173,37 @@ export default function Index() {
                   {content.subtitle}
                 </p>
 
+                {/* CTA Buttons */}
+                <div 
+                  className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2 opacity-0 animate-slide-up"
+                  style={{ animationDelay: '0.45s', animationFillMode: 'forwards' }}
+                >
+                  <Button
+                    size="lg"
+                    onClick={openChatPopup}
+                    className="gap-2 px-8 h-12 rounded-xl gradient-hero text-white shadow-lg hover:shadow-glow transition-all duration-300 hover:scale-105 group"
+                  >
+                    <MessageCircle className="w-5 h-5" />
+                    Start Chat
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    asChild
+                    className="gap-2 px-8 h-12 rounded-xl border-2 hover:bg-primary/5 transition-all duration-300"
+                  >
+                    <Link to="/schemes">
+                      Explore Schemes
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </Button>
+                </div>
+
                 {/* Trust Badges */}
                 <div 
-                  className="pt-4 opacity-0 animate-slide-up"
-                  style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}
+                  className="pt-6 opacity-0 animate-slide-up"
+                  style={{ animationDelay: '0.55s', animationFillMode: 'forwards' }}
                 >
                   <TrustBadges />
                 </div>

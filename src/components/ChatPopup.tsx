@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { X, MessageCircle, Minimize2, Maximize2, Sparkles, History, Plus, Trash2, ChevronLeft, LogIn, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ChatInput } from "@/components/ChatInput";
+import { ChatInput, ChatInputHandle } from "@/components/ChatInput";
 import { ChatMessage } from "@/components/ChatMessage";
 import { useChatWithHistory } from "@/hooks/useChatWithHistory";
 import { useAuth } from "@/hooks/useAuth";
@@ -17,8 +17,18 @@ interface ChatPopupProps {
 
 const welcomeMessage = {
   role: "assistant" as const,
-  content: "Namaste! 🙏 I'm your JanSaathi assistant. I can help you discover government welfare schemes you might be eligible for. Tell me about yourself - your age, occupation, income, and location - and I'll find the right schemes for you!"
+  content: "Hello! 👋 I'm JanSaathi, your AI welfare assistant.\n\nTell me a little about yourself to find government schemes you're eligible for. You can start by sharing:\n\n• Your **age** and **location** (state)\n• Your **occupation** (farmer, student, senior citizen, etc.)\n• Optionally, your **income range**\n\nOr simply click one of the quick options below!"
 };
+
+// Guided quick prompts for step-by-step discovery
+const guidedPrompts = [
+  { label: "I'm a farmer", message: "I'm a farmer. What schemes are available for me?" },
+  { label: "Senior citizen (60+)", message: "I'm a senior citizen above 60 years old. What benefits am I eligible for?" },
+  { label: "Woman entrepreneur", message: "I'm a woman looking to start a business. Are there any schemes to support me?" },
+  { label: "Student scholarship", message: "I'm a student looking for scholarships and education support schemes." },
+  { label: "Low income family", message: "My family has a low income. What welfare schemes can help us?" },
+  { label: "Help me find schemes", message: "I want to discover schemes I'm eligible for. Can you guide me?" },
+];
 
 export function ChatPopup({ isOpen, onClose, language = "en", onOpenAuth }: ChatPopupProps) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -36,6 +46,7 @@ export function ChatPopup({ isOpen, onClose, language = "en", onOpenAuth }: Chat
     clearAllHistory,
   } = useChatWithHistory(language);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<ChatInputHandle>(null);
   
   const userDisplayName = user?.user_metadata?.full_name || user?.email?.split("@")[0];
 
@@ -45,6 +56,17 @@ export function ChatPopup({ isOpen, onClose, language = "en", onOpenAuth }: Chat
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
+
+  // Auto-focus input when popup opens
+  useEffect(() => {
+    if (isOpen && !showHistory) {
+      // Small delay to ensure the popup is fully rendered
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, showHistory]);
 
   // Handle escape key to close
   useEffect(() => {
@@ -61,9 +83,9 @@ export function ChatPopup({ isOpen, onClose, language = "en", onOpenAuth }: Chat
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen, onClose, showHistory]);
 
-  // Prevent body scroll when popup is open on mobile
+  // Prevent body scroll when popup is open
   useEffect(() => {
-    if (isOpen && isExpanded) {
+    if (isOpen) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -71,7 +93,7 @@ export function ChatPopup({ isOpen, onClose, language = "en", onOpenAuth }: Chat
     return () => {
       document.body.style.overflow = "";
     };
-  }, [isOpen, isExpanded]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -98,24 +120,30 @@ export function ChatPopup({ isOpen, onClose, language = "en", onOpenAuth }: Chat
     setShowHistory(false);
   };
 
+  const handleGuidedPrompt = (message: string) => {
+    sendMessage(message);
+  };
+
   return (
     <>
-      {/* Backdrop for expanded mode */}
-      {isExpanded && (
-        <div 
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 animate-fade-in"
-          onClick={onClose}
-        />
-      )}
+      {/* Backdrop */}
+      <div 
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 animate-fade-in"
+        onClick={onClose}
+        aria-hidden="true"
+      />
       
       {/* Chat Popup */}
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="chat-title"
         className={cn(
           "fixed z-50 flex flex-col bg-background border border-border shadow-2xl transition-all duration-300 ease-out overflow-hidden",
           isExpanded 
             ? "inset-4 md:inset-8 rounded-2xl" 
-            : "bottom-4 right-4 w-[calc(100%-2rem)] sm:w-[400px] h-[550px] sm:h-[600px] rounded-2xl",
-          isOpen ? "animate-slide-up opacity-100" : "opacity-0 pointer-events-none"
+            : "bottom-4 right-4 left-4 sm:left-auto w-auto sm:w-[420px] h-[80vh] sm:h-[600px] max-h-[700px] rounded-2xl",
+          "animate-scale-in"
         )}
       >
         {/* Header */}
@@ -131,13 +159,13 @@ export function ChatPopup({ isOpen, onClose, language = "en", onOpenAuth }: Chat
                 <ChevronLeft className="w-5 h-5" />
               </Button>
             ) : (
-              <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm animate-pulse-gentle">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
             )}
             <div>
-              <h3 className="font-semibold text-white text-sm">
-                {showHistory ? "Chat History" : "JanSaathi"}
+              <h3 id="chat-title" className="font-semibold text-white text-sm">
+                {showHistory ? "Chat History" : "JanSaathi AI"}
               </h3>
               <p className="text-xs text-white/70">
                 {showHistory 
@@ -303,21 +331,18 @@ export function ChatPopup({ isOpen, onClose, language = "en", onOpenAuth }: Chat
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Quick prompts for empty state */}
+            {/* Quick prompts for empty state - Enhanced guided prompts */}
             {messages.length === 0 && (
-              <div className="px-4 pb-2 flex-shrink-0">
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    "I'm a farmer from UP",
-                    "Senior citizen benefits",
-                    "Schemes for women"
-                  ].map((prompt) => (
+              <div className="px-4 pb-3 flex-shrink-0">
+                <p className="text-xs text-muted-foreground mb-2 text-center">Quick start options:</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {guidedPrompts.map((prompt) => (
                     <button
-                      key={prompt}
-                      onClick={() => sendMessage(prompt)}
-                      className="text-xs px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors border border-primary/20"
+                      key={prompt.label}
+                      onClick={() => handleGuidedPrompt(prompt.message)}
+                      className="text-xs px-3 py-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all duration-200 border border-primary/20 hover:border-primary/40 hover:scale-[1.02] text-left"
                     >
-                      {prompt}
+                      {prompt.label}
                     </button>
                   ))}
                 </div>
@@ -327,9 +352,10 @@ export function ChatPopup({ isOpen, onClose, language = "en", onOpenAuth }: Chat
             {/* Input Area */}
             <div className="p-4 border-t border-border/50 bg-card/50 flex-shrink-0">
               <ChatInput
+                ref={inputRef}
                 onSend={sendMessage}
                 isLoading={isLoading}
-                placeholder="Ask about government schemes..."
+                placeholder="Describe your situation or ask about schemes..."
               />
             </div>
           </>
