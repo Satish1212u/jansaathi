@@ -1,4 +1,9 @@
-import { Mail, Phone, MapPin, Facebook, Twitter, Youtube, Instagram } from "lucide-react";
+import { useState } from "react";
+import { Mail, Phone, MapPin, Facebook, Twitter, Youtube, Instagram, Send, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const quickLinks = [
   { label: "myScheme Portal", href: "https://www.myscheme.gov.in" },
@@ -15,6 +20,56 @@ const socialLinks = [
 ];
 
 export function Footer() {
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !email.includes("@")) {
+      toast({
+        title: "Invalid email",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { error } = await supabase
+        .from("newsletter_subscribers")
+        .insert({ email: email.trim().toLowerCase() });
+
+      if (error) {
+        if (error.code === "23505") {
+          toast({
+            title: "Already subscribed",
+            description: "This email is already subscribed to our newsletter.",
+          });
+        } else {
+          throw error;
+        }
+      } else {
+        toast({
+          title: "Subscribed!",
+          description: "Thank you for subscribing to our newsletter.",
+        });
+        setEmail("");
+      }
+    } catch (error) {
+      console.error("Subscription error:", error);
+      toast({
+        title: "Subscription failed",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <footer className="bg-muted/30 border-t border-border">
       <div className="container py-10">
@@ -66,13 +121,33 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Social Links */}
+          {/* Newsletter Section */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-foreground">Follow Us</h3>
+            <h3 className="text-lg font-semibold text-foreground">Newsletter</h3>
             <p className="text-sm text-muted-foreground">
-              Stay updated with the latest schemes and announcements.
+              Get updates on new schemes and policy changes.
             </p>
-            <div className="flex gap-3">
+            <form onSubmit={handleSubscribe} className="space-y-3">
+              <div className="flex gap-2">
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="bg-background"
+                  disabled={isLoading}
+                />
+                <Button type="submit" size="icon" disabled={isLoading}>
+                  {isLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
+                </Button>
+              </div>
+            </form>
+            {/* Social Links */}
+            <div className="flex gap-3 pt-2">
               {socialLinks.map((social) => (
                 <a
                   key={social.label}
