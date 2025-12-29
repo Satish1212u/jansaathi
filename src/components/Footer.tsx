@@ -13,7 +13,7 @@ const quickLinks = [
 ];
 
 const contactInfo = [
-  { icon: Phone, label: "8860987442 / 9625897435", href: "tel:8860987442" },
+  { icon: Phone, label: "8860987442 / 9625897435 / 7303027723", href: "tel:8860987442" },
   { icon: Mail, label: "help.jansaathi.in@gmail.com", href: "mailto:help.jansaathi.in@gmail.com" },
   { icon: MapPin, label: "New Delhi, India", href: null },
 ];
