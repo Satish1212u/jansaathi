@@ -8,6 +8,7 @@ import { TrustBadges } from "@/components/TrustBadges";
 import { HowItWorks } from "@/components/HowItWorks";
 import { Testimonials } from "@/components/Testimonials";
 import { Statistics } from "@/components/Statistics";
+import { CTABanner } from "@/components/CTABanner";
 import { useChat } from "@/hooks/useChat";
 import { Button } from "@/components/ui/button";
 import { RotateCcw, Sparkles } from "lucide-react";
@@ -178,6 +179,9 @@ export default function Index() {
 
         {/* Testimonials - Only show when no messages */}
         {messages.length === 0 && <Testimonials />}
+
+        {/* CTA Banner - Only show when no messages */}
+        {messages.length === 0 && <CTABanner />}
 
         {/* Chat Area */}
         <section className="flex-1 flex flex-col">
