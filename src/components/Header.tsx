@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { LanguageSelector } from "./LanguageSelector";
 import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import { LogIn, UserPlus, LogOut, User, Menu, X } from "lucide-react";
 import {
@@ -31,7 +32,16 @@ export function Header({ language = "en", onLanguageChange, onOpenAuth }: Header
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const userDisplayName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
+  const userAvatarUrl = user?.user_metadata?.avatar_url;
 
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map(part => part[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
   return (
     <header className="sticky top-0 z-50 glass border-b border-border/30">
       <div className="container flex items-center justify-between h-16 md:h-18">
@@ -103,9 +113,12 @@ export function Header({ language = "en", onLanguageChange, onOpenAuth }: Header
                       variant="ghost"
                       className="gap-2 px-3 h-9 rounded-xl"
                     >
-                      <div className="w-7 h-7 rounded-full gradient-hero flex items-center justify-center">
-                        <User className="w-4 h-4 text-white" />
-                      </div>
+                      <Avatar className="w-7 h-7">
+                        <AvatarImage src={userAvatarUrl || undefined} alt={userDisplayName} />
+                        <AvatarFallback className="gradient-hero text-white text-xs font-bold">
+                          {getInitials(userDisplayName)}
+                        </AvatarFallback>
+                      </Avatar>
                       <span className="hidden sm:inline text-sm font-medium max-w-[100px] truncate">
                         {userDisplayName}
                       </span>
@@ -234,9 +247,12 @@ export function Header({ language = "en", onLanguageChange, onOpenAuth }: Header
             {!isLoading && isAuthenticated && (
               <div className="pt-2 border-t border-border/30 space-y-2">
                 <div className="flex items-center gap-3 px-3 py-2">
-                  <div className="w-8 h-8 rounded-full gradient-hero flex items-center justify-center">
-                    <User className="w-4 h-4 text-white" />
-                  </div>
+                  <Avatar className="w-8 h-8">
+                    <AvatarImage src={userAvatarUrl || undefined} alt={userDisplayName} />
+                    <AvatarFallback className="gradient-hero text-white text-xs font-bold">
+                      {getInitials(userDisplayName)}
+                    </AvatarFallback>
+                  </Avatar>
                   <div>
                     <p className="text-sm font-medium">{userDisplayName}</p>
                     <p className="text-xs text-muted-foreground">{user?.email}</p>
