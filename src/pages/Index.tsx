@@ -6,6 +6,7 @@ import { ChatInput } from "@/components/ChatInput";
 import { QuickPrompts } from "@/components/QuickPrompts";
 import { TrustBadges } from "@/components/TrustBadges";
 import { HowItWorks } from "@/components/HowItWorks";
+import { Testimonials } from "@/components/Testimonials";
 import { useChat } from "@/hooks/useChat";
 import { Button } from "@/components/ui/button";
 import { RotateCcw, Sparkles } from "lucide-react";
@@ -170,6 +171,9 @@ export default function Index() {
 
         {/* How It Works - Only show when no messages */}
         {messages.length === 0 && <HowItWorks />}
+
+        {/* Testimonials - Only show when no messages */}
+        {messages.length === 0 && <Testimonials />}
 
         {/* Chat Area */}
         <section className="flex-1 flex flex-col">
