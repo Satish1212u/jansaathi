@@ -8,12 +8,43 @@ type Message = {
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/welfare-chat`;
 
+// Input validation constants (must match server-side)
+const MAX_MESSAGE_LENGTH = 2000;
+const MAX_CONVERSATION_LENGTH = 50;
+
+// Client-side input validation
+function validateInput(input: string, messagesCount: number): { valid: boolean; error?: string } {
+  // Check if message is empty
+  if (!input || input.trim().length === 0) {
+    return { valid: false, error: "Please enter a message." };
+  }
+  
+  // Check message length
+  if (input.length > MAX_MESSAGE_LENGTH) {
+    return { valid: false, error: `Message too long. Please keep it under ${MAX_MESSAGE_LENGTH} characters.` };
+  }
+  
+  // Check conversation length
+  if (messagesCount >= MAX_CONVERSATION_LENGTH) {
+    return { valid: false, error: "Conversation too long. Please start a new chat." };
+  }
+  
+  return { valid: true };
+}
+
 export function useChat(language: string) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const sendMessage = useCallback(async (input: string) => {
-    const userMsg: Message = { role: "user", content: input };
+    // Client-side validation before sending
+    const validation = validateInput(input, messages.length);
+    if (!validation.valid) {
+      toast.error(validation.error);
+      return;
+    }
+
+    const userMsg: Message = { role: "user", content: input.trim() };
     setMessages((prev) => [...prev, userMsg]);
     setIsLoading(true);
 
@@ -51,6 +82,8 @@ export function useChat(language: string) {
           toast.error("Too many requests. Please wait a moment and try again.");
         } else if (response.status === 402) {
           toast.error("Service temporarily unavailable. Please try again later.");
+        } else if (response.status === 400) {
+          toast.error(errorData.error || "Invalid input. Please check your message and try again.");
         } else {
           toast.error(errorData.error || "Failed to get response. Please try again.");
         }
