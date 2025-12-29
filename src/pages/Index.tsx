@@ -29,9 +29,19 @@ const welcomeMessages: Record<string, { title: string; subtitle: string; prompt:
 
 export default function Index() {
   const [language, setLanguage] = useState("en");
+  const [scrollY, setScrollY] = useState(0);
   const { messages, isLoading, sendMessage, clearChat } = useChat(language);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const content = welcomeMessages[language] || welcomeMessages.en;
+
+  // Parallax scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
@@ -50,11 +60,54 @@ export default function Index() {
         {/* Hero Section - Only show when no messages */}
         {messages.length === 0 && (
           <section className="relative overflow-hidden py-12 md:py-20">
-            {/* Decorative Elements */}
+            {/* Parallax Decorative Elements */}
             <div className="absolute inset-0 z-0 overflow-hidden">
-              <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-fade-in" style={{ animationDelay: '0.3s', animationDuration: '1s' }} />
-              <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-fade-in" style={{ animationDelay: '0.5s', animationDuration: '1s' }} />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-primary/5 to-transparent rounded-full animate-fade-in" style={{ animationDelay: '0.2s', animationDuration: '1.2s' }} />
+              <div 
+                className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-fade-in transition-transform duration-100 ease-out" 
+                style={{ 
+                  animationDelay: '0.3s', 
+                  animationDuration: '1s',
+                  transform: `translate(${scrollY * 0.15}px, ${scrollY * 0.1}px)` 
+                }} 
+              />
+              <div 
+                className="absolute -bottom-40 -left-40 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-fade-in transition-transform duration-100 ease-out" 
+                style={{ 
+                  animationDelay: '0.5s', 
+                  animationDuration: '1s',
+                  transform: `translate(${scrollY * -0.12}px, ${scrollY * -0.08}px)` 
+                }} 
+              />
+              <div 
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-primary/5 to-transparent rounded-full animate-fade-in transition-transform duration-100 ease-out" 
+                style={{ 
+                  animationDelay: '0.2s', 
+                  animationDuration: '1.2s',
+                  transform: `translate(calc(-50% + ${scrollY * 0.05}px), calc(-50% + ${scrollY * 0.15}px))` 
+                }} 
+              />
+              {/* Additional floating elements for depth */}
+              <div 
+                className="absolute top-20 left-1/4 w-32 h-32 bg-primary/5 rounded-full blur-2xl animate-fade-in transition-transform duration-100 ease-out"
+                style={{ 
+                  animationDelay: '0.4s',
+                  transform: `translateY(${scrollY * 0.25}px)` 
+                }}
+              />
+              <div 
+                className="absolute bottom-32 right-1/4 w-48 h-48 bg-secondary/5 rounded-full blur-2xl animate-fade-in transition-transform duration-100 ease-out"
+                style={{ 
+                  animationDelay: '0.6s',
+                  transform: `translateY(${scrollY * -0.2}px)` 
+                }}
+              />
+              <div 
+                className="absolute top-1/3 right-20 w-24 h-24 bg-accent/10 rounded-full blur-xl animate-fade-in transition-transform duration-100 ease-out"
+                style={{ 
+                  animationDelay: '0.7s',
+                  transform: `translate(${scrollY * -0.1}px, ${scrollY * 0.3}px)` 
+                }}
+              />
             </div>
 
             <div className="container relative z-10">
