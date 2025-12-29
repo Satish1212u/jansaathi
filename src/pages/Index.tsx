@@ -7,6 +7,7 @@ import { QuickPrompts } from "@/components/QuickPrompts";
 import { TrustBadges } from "@/components/TrustBadges";
 import { HowItWorks } from "@/components/HowItWorks";
 import { Testimonials } from "@/components/Testimonials";
+import { Statistics } from "@/components/Statistics";
 import { useChat } from "@/hooks/useChat";
 import { Button } from "@/components/ui/button";
 import { RotateCcw, Sparkles } from "lucide-react";
@@ -168,6 +169,9 @@ export default function Index() {
             </div>
           </section>
         )}
+
+        {/* Statistics - Only show when no messages */}
+        {messages.length === 0 && <Statistics />}
 
         {/* How It Works - Only show when no messages */}
         {messages.length === 0 && <HowItWorks />}
