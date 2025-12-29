@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 type Message = {
   role: "user" | "assistant";
@@ -64,10 +65,21 @@ export function useChat(language: string) {
     };
 
     try {
+      // Get current session for auth token
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast.error("Please log in to use the chat assistant.");
+        setMessages((prev) => prev.slice(0, -1));
+        setIsLoading(false);
+        return;
+      }
+
       const response = await fetch(CHAT_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           messages: [...messages, userMsg],
@@ -78,7 +90,9 @@ export function useChat(language: string) {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         
-        if (response.status === 429) {
+        if (response.status === 401) {
+          toast.error("Session expired. Please log in again.");
+        } else if (response.status === 429) {
           toast.error("Too many requests. Please wait a moment and try again.");
         } else if (response.status === 402) {
           toast.error("Service temporarily unavailable. Please try again later.");

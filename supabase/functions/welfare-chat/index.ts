@@ -264,13 +264,30 @@ serve(async (req) => {
   }
 
   try {
-    // Rate limiting check
-    const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
-                     req.headers.get('x-real-ip') || 
-                     'unknown';
+    // Authentication check - JWT is now verified by Supabase
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.warn('Unauthorized request - missing or invalid auth header');
+      return new Response(
+        JSON.stringify({ error: 'Authentication required. Please log in to use the chat.' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Extract user ID for per-user rate limiting
+    const token = authHeader.replace('Bearer ', '');
+    let userId = 'unknown';
+    try {
+      // Decode JWT to get user ID (Supabase already verified it)
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      userId = payload.sub || 'unknown';
+    } catch {
+      console.warn('Could not decode token for rate limiting');
+    }
     
-    if (!checkRateLimit(clientIp)) {
-      console.log(`Rate limit triggered for: ${clientIp.substring(0, 10)}...`);
+    // Rate limiting check (now per-user instead of per-IP)
+    if (!checkRateLimit(userId)) {
+      console.log(`Rate limit triggered for user: ${userId.substring(0, 8)}...`);
       return new Response(
         JSON.stringify({ error: 'Rate limit exceeded. Please wait a moment and try again.' }),
         { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
