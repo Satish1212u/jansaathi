@@ -1,4 +1,5 @@
 import { LanguageSelector } from "./LanguageSelector";
+import { ThemeToggle } from "./ThemeToggle";
 import { HandHeart } from "lucide-react";
 
 interface HeaderProps {
@@ -25,8 +26,11 @@ export function Header({ language, onLanguageChange }: HeaderProps) {
           </div>
         </div>
 
-        {/* Language Selector */}
-        <LanguageSelector selected={language} onSelect={onLanguageChange} />
+        {/* Controls */}
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <LanguageSelector selected={language} onSelect={onLanguageChange} />
+        </div>
       </div>
     </header>
   );
