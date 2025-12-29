@@ -1,4 +1,6 @@
 import { FileText, Users, IndianRupee, Building2 } from "lucide-react";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { cn } from "@/lib/utils";
 
 const stats = [
   {
@@ -32,15 +34,24 @@ const stats = [
 ];
 
 export function Statistics() {
+  const { ref, isVisible } = useScrollAnimation<HTMLElement>();
+
   return (
-    <section className="py-12 md:py-16">
+    <section ref={ref} className="py-12 md:py-16">
       <div className="container">
-        <div className="glass rounded-3xl p-8 md:p-12">
+        <div className={cn(
+          "glass rounded-3xl p-8 md:p-12 transition-all duration-700",
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        )}>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
               <div
                 key={stat.label}
-                className="text-center group"
+                className={cn(
+                  "text-center group transition-all duration-500",
+                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                )}
+                style={{ transitionDelay: isVisible ? `${index * 100}ms` : "0ms" }}
               >
                 {/* Icon */}
                 <div className={`w-12 h-12 mx-auto rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center shadow-lg mb-4 transition-transform duration-300 group-hover:scale-110`}>

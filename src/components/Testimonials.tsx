@@ -1,4 +1,6 @@
 import { Star, Quote } from "lucide-react";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { cn } from "@/lib/utils";
 
 const testimonials = [
   {
@@ -31,10 +33,15 @@ const testimonials = [
 ];
 
 export function Testimonials() {
+  const { ref, isVisible } = useScrollAnimation<HTMLElement>();
+
   return (
-    <section className="py-12 md:py-16 bg-muted/30">
+    <section ref={ref} className="py-12 md:py-16 bg-muted/30">
       <div className="container">
-        <div className="text-center mb-10">
+        <div className={cn(
+          "text-center mb-10 transition-all duration-700",
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        )}>
           <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
             Success Stories
           </span>
@@ -50,7 +57,11 @@ export function Testimonials() {
           {testimonials.map((testimonial, index) => (
             <div
               key={testimonial.name}
-              className="glass rounded-2xl p-6 hover-lift relative"
+              className={cn(
+                "glass rounded-2xl p-6 hover-lift relative transition-all duration-500",
+                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+              )}
+              style={{ transitionDelay: isVisible ? `${200 + index * 150}ms` : "0ms" }}
             >
               {/* Quote icon */}
               <Quote className="w-8 h-8 text-primary/20 absolute top-4 right-4" />
