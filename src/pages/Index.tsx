@@ -59,7 +59,7 @@ export default function Index() {
       <main className="flex-1 flex flex-col">
         {/* Hero Section - Only show when no messages */}
         {messages.length === 0 && (
-          <section className="relative overflow-hidden py-12 md:py-20">
+          <section id="hero" className="relative overflow-hidden py-12 md:py-20">
             {/* Parallax Decorative Elements */}
             <div className="absolute inset-0 z-0 overflow-hidden">
               <div 
@@ -170,7 +170,7 @@ export default function Index() {
               </div>
             ) : (
               /* Quick Prompts - Only when no messages */
-              <div className="py-6 space-y-4">
+              <div id="categories" className="py-6 space-y-4">
                 <div 
                   className="flex items-center gap-2 justify-center text-muted-foreground opacity-0 animate-slide-up"
                   style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}
